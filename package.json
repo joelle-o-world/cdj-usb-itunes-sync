@@ -1,0 +1,15 @@
+{
+  "name": "itunes-usb-sync",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Joelle Plow <joelleplow@aol.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^17.0.14",
+    "typescript": "^4.5.5",
+    "yaml": "^1.10.2"
+  },
+  "scripts": {
+    "start": "osascript read.scpt 2> itunes-state.yaml && ts-node parse.ts"
+  }
+}
