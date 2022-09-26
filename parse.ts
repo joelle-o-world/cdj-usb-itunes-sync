@@ -1,5 +1,5 @@
 import fs from "fs";
-import { basename, resolve } from "path";
+import { basename, relative, resolve } from "path";
 
 import yaml from "yaml";
 
@@ -8,7 +8,7 @@ const destination = "/Volumes/JOELLEMUSIC/ITUNES_SYNC";
 (async function main() {
   if (!fs.existsSync(destination)) {
     await fs.promises.mkdir(destination);
-    console.log(`Created directory ${destination}`);
+    console.log(`CREATED\t${destination}`);
   }
 
   const itunesPlaylists: {
@@ -27,22 +27,20 @@ const destination = "/Volumes/JOELLEMUSIC/ITUNES_SYNC";
   for (let playlistName in itunesPlaylists) {
     // TODO: Delete playlists that shouldn't exist
 
-    console.log(`Syncing playlist ${playlistName}`);
-
     const playlistPath = resolve(destination, sanitise(playlistName));
 
     if (!fs.existsSync(playlistPath)) {
       await fs.promises.mkdir(playlistPath);
-      console.log(`Created directory ${playlistPath}`);
+      console.log(`CREATED\t${playlistPath}`);
     }
 
     const originalFiles = itunesPlaylists[playlistName];
     if (!originalFiles || !originalFiles.length) {
-      console.log(
-        `Skipping playlist ${JSON.stringify(
-          playlistName
-        )} because it has no tracks`
-      );
+      //console.log(
+      //`Skipping playlist ${JSON.stringify(
+      //playlistName
+      //)} because it has no tracks`
+      //);
       continue;
     }
 
@@ -57,7 +55,7 @@ const destination = "/Volumes/JOELLEMUSIC/ITUNES_SYNC";
       if (!existingFiles.includes(filename)) {
         const destPath = resolve(playlistPath, filename);
         await fs.promises.copyFile(srcPath, destPath);
-        console.log(`Copied ${filename}`);
+        console.log(`ADDED\t${relative(destination, destPath)}`);
       }
     }
   }
@@ -74,9 +72,8 @@ async function deleteUnexpectedFiles(
     for (let file of toDelete) {
       const path = resolve(directory, file);
       await fs.promises.rm(path, { recursive: true, force: true });
-      console.log(`Deleted ${path}`);
+      console.log(`DELETED\t${relative(destination, path)}`);
     }
-  else console.log(`nothing to delete in ${directory}`);
 }
 
 function sanitise(filename: string) {
